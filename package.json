@@ -1,40 +1,31 @@
-import { AppShell } from "@/components/AppShell";
-
-export default function SettingsPage() {
-  return (
-    <AppShell>
-      <header className="topbar">
-        <div>
-          <h1>設定</h1>
-          <p className="muted">ログイン、ストレージ、AI、会社情報を設定します。</p>
-        </div>
-      </header>
-      <section className="panel">
-        <div className="form-grid">
-          <div className="field">
-            <label>会社名</label>
-            <input defaultValue="WOOD WORK KOBAYASHI" />
-          </div>
-          <div className="field">
-            <label>案件番号 prefix</label>
-            <input defaultValue="WWK" />
-          </div>
-          <div className="field">
-            <label>Googleログイン</label>
-            <select defaultValue="enabled">
-              <option value="enabled">有効</option>
-              <option value="disabled">無効</option>
-            </select>
-          </div>
-          <div className="field">
-            <label>メールログイン</label>
-            <select defaultValue="enabled">
-              <option value="enabled">有効</option>
-              <option value="disabled">無効</option>
-            </select>
-          </div>
-        </div>
-      </section>
-    </AppShell>
-  );
+{
+  "name": "wwk-works-cloud",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.46.1",
+    "next": "^15.0.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "^15.0.3",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.7.2"
+  }
 }
