@@ -1,17 +1,29 @@
-# データベース設計
+# API設計
 
-中心は `projects` です。`customers`、`drawings`、`photos`、`estimates` が案件に紐づきます。
+## 案件
 
-主要テーブル:
+- `GET /api/projects`
+  - 次回案件番号のプレビューを返します。
+- `POST /api/projects`
+  - 案件を作成します。
+  - 本番ではSupabase RPC `issue_project_no()` を呼び出して採番します。
 
-- `customers`: 会社名、担当者、電話番号、メール
-- `projects`: 案件番号、顧客、商品名、材種、ステータス、納期
-- `drawings`: 図面ファイル、形式、Storageパス、AI抽出結果
-- `photos`: 製作前、製作中、完成後の写真
-- `estimates`: 見積ヘッダ、合計、PDF保存先、履歴バージョン
-- `estimate_items`: 見積明細
-- `project_sequences`: 年ごとの連番管理
+## 図面AI解析
 
-案件番号は `issue_project_no()` で `WWK-260001` 形式を発行します。
+- `POST /api/drawings/analyze`
+  - `multipart/form-data`
+  - `text`: PDF OCRやCADメタデータから抽出した文字列
+  - 戻り値: `dimensions`, `woodSpecies`, `productName`, `notes`
 
-RLSは従業員1〜20名の社内利用を想定し、まずは `authenticated` 全員が読み書き可能な運用にしています。将来、管理者、設計、製作、閲覧のみの権限へ分割できます。
+実運用ではアップロード後に次の処理を行います。
+
+1. Supabase Storageへ保存
+2. PDFはOCR、DXF/DWGは変換サービスまたはサーバー処理でテキスト化
+3. OpenAI APIで寸法、材種、商品名を抽出
+4. `drawings.extracted_dimensions` と `drawings.extracted_wood_species` に保存
+
+## 見積PDF
+
+- `GET /api/estimates/:id/pdf`
+  - 見積PDFを生成して返します。
+  - 本番では生成済みPDFをSupabase Storage `estimates` bucketへ保存し、履歴として保持します。
