@@ -1,22 +1,30 @@
 import { formatYen, projects } from "@/lib/mock-data";
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
-export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const project = projects.find((item) => item.id === id || item.projectNo === id) || projects[0];
-  const pdf = await PDFDocument.create();
-  const page = pdf.addPage([595, 842]);
-  const font = await pdf.embedFont(StandardFonts.Helvetica);
+export async function GET(_: Request, { params }: { params: { id: string } }) {
+  const project = projects.find((item) => item.id === params.id || item.projectNo === params.id) || projects[0];
+  const lines = [
+    "%PDF-1.4",
+    "1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj",
+    "2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj",
+    "3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >> endobj",
+    "4 0 obj << /Length 220 >> stream",
+    "BT /F1 18 Tf 56 780 Td (WWK Works Cloud Estimate) Tj ET",
+    `BT /F1 12 Tf 56 740 Td (Project: ${project.projectNo}) Tj ET`,
+    `BT /F1 12 Tf 56 720 Td (Customer: ${project.customerName}) Tj ET`,
+    `BT /F1 12 Tf 56 700 Td (Product: ${project.productName}) Tj ET`,
+    `BT /F1 12 Tf 56 680 Td (Total: ${formatYen(project.estimateTotal)}) Tj ET`,
+    "endstream endobj",
+    "5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj",
+    "xref",
+    "0 6",
+    "0000000000 65535 f ",
+    "trailer << /Root 1 0 R /Size 6 >>",
+    "startxref",
+    "0",
+    "%%EOF"
+  ];
 
-  page.drawText("WWK Works Cloud Estimate", { x: 56, y: 780, size: 22, font, color: rgb(0.12, 0.14, 0.13) });
-  page.drawText(`Project: ${project.projectNo}`, { x: 56, y: 735, size: 12, font });
-  page.drawText(`Customer: ${project.customerName}`, { x: 56, y: 714, size: 12, font });
-  page.drawText(`Product: ${project.productName}`, { x: 56, y: 693, size: 12, font });
-  page.drawText(`Wood: ${project.woodSpecies}`, { x: 56, y: 672, size: 12, font });
-  page.drawText(`Total: ${formatYen(project.estimateTotal)}`, { x: 56, y: 630, size: 16, font, color: rgb(0.35, 0.24, 0.13) });
-
-  const bytes = await pdf.save();
-  return new Response(bytes, {
+  return new Response(lines.join("\n"), {
     headers: {
       "content-type": "application/pdf",
       "content-disposition": `attachment; filename="${project.projectNo}-estimate.pdf"`
