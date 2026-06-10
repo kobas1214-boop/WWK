@@ -1,39 +1,13 @@
-# セットアップ手順
-
-1. 依存関係をインストール
-
-```bash
-npm install
-```
-
-2. 環境変数を作成
-
-```bash
-cp .env.example .env.local
-```
-
-3. SupabaseでSQLを実行
-
-Supabase SQL Editorで次を順番に実行します。
-
-- `supabase/schema.sql`
-- `supabase/storage-policies.sql`
-
-4. Supabase Authを設定
-
-- Email providerを有効化
-- Google providerを有効化
-- Site URLに本番URLを設定
-- Redirect URLsに `http://localhost:3000/**` と本番URLを追加
-
-5. 開発サーバーを起動
-
-```bash
-npm run dev
-```
-
-6. ブラウザで確認
+# フォルダ構成
 
 ```text
-http://localhost:3000
+WWK-Works-Cloud/
+  src/app/                    Next.js App Router画面とAPI
+  src/components/             UIコンポーネント
+  src/lib/                    型、Supabase、AI、採番ロジック
+  supabase/schema.sql         DBテーブル、RLS、案件番号発行関数
+  supabase/storage-policies.sql
+  docs/                       設計、API、セットアップ、デプロイ
 ```
+
+本番では `src/lib/mock-data.ts` をSupabase取得処理へ置き換えます。画面とコンポーネントはそのまま利用できます。

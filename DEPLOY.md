@@ -1,33 +1,17 @@
-# デプロイ手順
+# データベース設計
 
-## 推奨構成
+中心は `projects` です。`customers`、`drawings`、`photos`、`estimates` が案件に紐づきます。
 
-- Hosting: Vercel
-- Database: Supabase Postgres
-- Storage: Supabase Storage
-- Auth: Supabase Auth
-- AI: OpenAI API
+主要テーブル:
 
-## Vercel
+- `customers`: 会社名、担当者、電話番号、メール
+- `projects`: 案件番号、顧客、商品名、材種、ステータス、納期
+- `drawings`: 図面ファイル、形式、Storageパス、AI抽出結果
+- `photos`: 製作前、製作中、完成後の写真
+- `estimates`: 見積ヘッダ、合計、PDF保存先、履歴バージョン
+- `estimate_items`: 見積明細
+- `project_sequences`: 年ごとの連番管理
 
-1. GitHubへリポジトリを作成してpush
-2. VercelでNext.jsプロジェクトとしてImport
-3. 環境変数を設定
-   - `NEXT_PUBLIC_APP_URL`
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-   - `OPENAI_API_KEY`
-   - `OPENAI_MODEL`
-4. `npm run build` が通ることを確認
-5. Production Deploy
+案件番号は `issue_project_no()` で `WWK-260001` 形式を発行します。
 
-## 公開前チェック
-
-- Supabase RLSが有効
-- Storage bucketが非公開
-- PDF、DXF、DWG、JPEG、PNGのアップロード確認
-- Googleログインとメールログイン確認
-- QRコードからスマホで案件詳細が開けること
-- 見積PDFが保存、再ダウンロードできること
-- AI解析結果を人が確認、修正できるUIを用意すること
+RLSは従業員1〜20名の社内利用を想定し、まずは `authenticated` 全員が読み書き可能な運用にしています。将来、管理者、設計、製作、閲覧のみの権限へ分割できます。
